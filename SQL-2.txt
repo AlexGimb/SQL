@@ -1,0 +1,199 @@
+Microsoft Windows [Version 10.0.19044.2604]
+(c) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+
+C:\Users\Alex>chcp 1251
+Текущая кодовая страница: 1251
+
+C:\Users\Alex>"C:\Program Files\PostgreSQL\14\scripts\runpsql.bat"
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Пароль пользователя postgres:
+psql (14.7)
+Введите "help", чтобы получить справку.
+
+postgres=#
+postgres=# \l
+                                          Список баз данных
+    Имя    | Владелец | Кодировка |     LC_COLLATE      |      LC_CTYPE       |     Права доступа
+-----------+----------+-----------+---------------------+---------------------+-----------------------
+ postgres  | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 |
+ skypro    | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 |
+ template0 | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+           |          |           |                     |                     | postgres=CTc/postgres
+ template1 | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+           |          |           |                     |                     | postgres=CTc/postgres
+(4 строки)
+
+postgres=# \c skypro
+Вы подключены к базе данных "skypro" как пользователь "postgres".
+
+skypro=# SELECT * FROM employee
+skypro-# SELECT * FROM employee;
+ОШИБКА:  ошибка синтаксиса (примерное положение: "SELECT")
+СТРОКА 2: SELECT * FROM employee;
+          ^
+skypro=# SELECT * FROM employee;
+ id | first_name | last_name | gender | age
+----+------------+-----------+--------+-----
+  2 | Petr       | Konovalov | man    |  27
+  3 | Olga       | Shishkina | woman  |  31
+(2 строки)
+
+
+skypro=# INSERT INTO employee (
+skypro(# first_name, last_name, gender, age)
+skypro-# VALUES ('Konstantin','Nepomnyashiy', 'man', 25);
+INSERT 0 1
+skypro=# INSERT INTO employee (
+skypro(# first_name, last_name, gender, age)
+skypro-# VALUES ('Fedor','Zhiglov', 'man', 51);
+INSERT 0 1
+skypro=# INSERT INTO employee (
+skypro(# first_name, last_name, gender, age)
+skypro-# VALUES ('Ekaterina','Pavlova', 'woman', 39);
+INSERT 0 1
+skypro=# SELECT * FROM employee;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  2 | Petr       | Konovalov    | man    |  27
+  3 | Olga       | Shishkina    | woman  |  31
+  4 | Konstantin | Nepomnyashiy | man    |  25
+  5 | Fedor      | Zhiglov      | man    |  51
+  6 | Ekaterina  | Pavlova      | woman  |  39
+(5 строк)
+
+
+skypro=# SELECT first_name AS Имя,
+skypro-# last_name AS Фамилия
+skypro-# FROM  employee;
+    Имя     |   Фамилия
+------------+--------------
+ Petr       | Konovalov
+ Olga       | Shishkina
+ Konstantin | Nepomnyashiy
+ Fedor      | Zhiglov
+ Ekaterina  | Pavlova
+(5 строк)
+
+
+skypro=# SELECT first_name AS Имя,
+skypro-# last_name AS Фамилия,
+skypro-# age < 30,
+skypro-# age > 50
+skypro-# FROM  employee;
+    Имя     |   Фамилия    | ?column? | ?column?
+------------+--------------+----------+----------
+ Petr       | Konovalov    | t        | f
+ Olga       | Shishkina    | f        | f
+ Konstantin | Nepomnyashiy | t        | f
+ Fedor      | Zhiglov      | f        | t
+ Ekaterina  | Pavlova      | f        | f
+(5 строк)
+
+
+skypro=# SELECT * FROM employee WHERE age < 30;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  2 | Petr       | Konovalov    | man    |  27
+  4 | Konstantin | Nepomnyashiy | man    |  25
+(2 строки)
+
+
+skypro=# SELECT * FROM employee WHERE age > 50;
+ id | first_name | last_name | gender | age
+----+------------+-----------+--------+-----
+  5 | Fedor      | Zhiglov   | man    |  51
+(1 строка)
+
+
+skypro=# SELECT * FROM employee WHERE age > 30 OR age < 50;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  2 | Petr       | Konovalov    | man    |  27
+  3 | Olga       | Shishkina    | woman  |  31
+  4 | Konstantin | Nepomnyashiy | man    |  25
+  5 | Fedor      | Zhiglov      | man    |  51
+  6 | Ekaterina  | Pavlova      | woman  |  39
+(5 строк)
+
+
+skypro=# SELECT * FROM employee WHERE age > 30 AND age < 50;
+ id | first_name | last_name | gender | age
+----+------------+-----------+--------+-----
+  3 | Olga       | Shishkina | woman  |  31
+  6 | Ekaterina  | Pavlova   | woman  |  39
+(2 строки)
+
+
+skypro=# SELECT * FROM employee ORDER BY last_name DESC;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  5 | Fedor      | Zhiglov      | man    |  51
+  3 | Olga       | Shishkina    | woman  |  31
+  6 | Ekaterina  | Pavlova      | woman  |  39
+  4 | Konstantin | Nepomnyashiy | man    |  25
+  2 | Petr       | Konovalov    | man    |  27
+(5 строк)
+
+skypro=# UPDATE employee
+skypro-# SET first_name = 'Olga' WHERE id=6;
+UPDATE 1
+skypro=# UPDATE employee
+skypro-# SET first_name = 'Petr' WHERE id=4;
+UPDATE 1
+skypro=# SELECT * FROM employee;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  2 | Petr       | Konovalov    | man    |  27
+  3 | Olga       | Shishkina    | woman  |  31
+  5 | Fedor      | Zhiglov      | man    |  51
+  6 | Olga       | Pavlova      | woman  |  39
+  4 | Petr       | Nepomnyashiy | man    |  25
+(5 строк)
+
+skypro=# SELECT * FROM employee ORDER BY first_name ASC;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  5 | Fedor      | Zhiglov      | man    |  51
+  3 | Olga       | Shishkina    | woman  |  31
+  6 | Olga       | Pavlova      | woman  |  39
+  2 | Petr       | Konovalov    | man    |  27
+  4 | Petr       | Nepomnyashiy | man    |  25
+(5 строк)
+
+skypro=# SELECT * FROM employee;
+ id | first_name |  last_name   | gender | age
+----+------------+--------------+--------+-----
+  2 | Petr       | Konovalov    | man    |  27
+  3 | Olga       | Shishkina    | woman  |  31
+  5 | Fedor      | Zhiglov      | man    |  51
+  6 | Olga       | Pavlova      | woman  |  39
+  4 | Petr       | Nepomnyashiy | man    |  25
+(5 строк)
+
+skypro=# SELECT first_name AS Имя,
+skypro-# SUM(age) AS Сумарный_возраст
+skypro-# FROM employee GROUP BY Имя;
+  Имя  | Сумарный_возраст
+-------+------------------
+ Olga  |               70
+ Petr  |               52
+ Fedor |               51
+(3 строки)
+
+skypro=# SELECT first_name AS Имя,
+skypro-# MIN(age) AS Возраст
+skypro-# FROM employee GROUP BY Имя;
+  Имя  | Возраст
+-------+---------
+ Olga  |      31
+ Petr  |      25
+ Fedor |      51
+(3 строки)
+
+
+
+
+
